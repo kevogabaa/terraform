@@ -1,0 +1,31 @@
+server:
+  additionalApplications:
+    - name: cluster-config
+      namespace: argocd
+      project: default
+      source:
+        repoURL: https://github.com/piomin/sample-terraform-kubernetes-argocd.git
+        targetRevision: HEAD
+        path: argocd/manifests/cluster
+        directory:
+          recurse: true
+      destination:
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: false
+      
+    - name: argocd-server-lb
+      namespace: argocd
+      project: default
+      source:
+        repoURL: https://github.com/piomin/sample-terraform-kubernetes-argocd.git
+        targetRevision: HEAD
+        path: argocd/manifests/loadbalancer  # Adjust the path if needed
+      destination:
+        server: "https://${azurerm_public_ip.argocd_public_ip.ip_address}"  # Use the actual IP or DNS name
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: false
