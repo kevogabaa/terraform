@@ -27,3 +27,11 @@ resource "local_file" "kubeconfig" {
   filename     = "kubeconfig"
   content      = azurerm_kubernetes_cluster.aks.kube_config_raw
 }
+
+output "ip_address" {
+  value = azurerm_public_ip.argocd_public_ip.ip_address
+}
+
+output "fqdn" {
+  value = azurerm_public_ip.argocd_public_ip.fqdn
+}

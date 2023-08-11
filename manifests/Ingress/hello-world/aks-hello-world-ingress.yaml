@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-world-ingress
+  namespace: test-deploy
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -12,6 +13,7 @@ spec:
   - http:
       paths:
       - path: /hello-world-one(/|$)(.*)
+        host: test.ogaba.io
         pathType: Prefix
         backend:
           service:
@@ -19,6 +21,7 @@ spec:
             port:
               number: 80
       - path: /hello-world-two(/|$)(.*)
+        host: test.ogaba.io
         pathType: Prefix
         backend:
           service:
@@ -26,6 +29,7 @@ spec:
             port:
               number: 80
       - path: /(.*)
+        host: test.ogaba.io
         pathType: Prefix
         backend:
           service:
@@ -37,6 +41,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-world-ingress-static
+  namespace: test-deploy
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /static/$2

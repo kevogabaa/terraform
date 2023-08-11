@@ -1,33 +1,46 @@
 applications:
- - name: sample-app-1
+ - name: hello-world
    namespace: argocd
    project: default
    source:
-     repoURL: https://github.com/piomin/openshift-cluster-config.git
-     targetRevision: HEAD
-     path: apps/simple-with-secret
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: manifests/deployments
    destination:
      server: https://kubernetes.default.svc
-     namespace: demo-1
    syncPolicy:
      automated:
-       prune: false
-       selfHeal: false
+       prune: true
+       selfHeal: true
      syncOptions:
       - CreateNamespace=true
- - name: sample-app-2
+ - name: hello-world-ingress
    namespace: argocd
    project: default
    source:
-     repoURL: https://github.com/piomin/openshift-cluster-config.git
-     targetRevision: HEAD
-     path: apps/simple-with-secret
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: manifests/Ingress/hello-world
    destination:
      server: https://kubernetes.default.svc
-     namespace: demo-2
    syncPolicy:
      automated:
-       prune: false
-       selfHeal: false
+       prune: true
+       selfHeal: true
+     syncOptions:
+       - CreateNamespace=true
+ - name: argocd-ingress
+   namespace: argocd
+   project: default
+   source:
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: manifests/Ingress/argocd
+   destination:
+     server: https://kubernetes.default.svc
+   syncPolicy:
+     automated:
+       prune: true
+       selfHeal: true
      syncOptions:
        - CreateNamespace=true

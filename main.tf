@@ -65,8 +65,7 @@ resource "azurerm_public_ip" "argocd_public_ip" {
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method  = "Static"
   sku = "Standard"
-  ddos_protection_mode = "Enabled"
-  
+  ddos_protection_mode = "Enabled"  
 }
 
 resource "azurerm_network_security_group" "argocd_nsg" {
@@ -135,4 +134,5 @@ resource "kubernetes_namespace" "test_deploy" {
 
   depends_on = [ azurerm_kubernetes_cluster.aks ]
 }
+
 
