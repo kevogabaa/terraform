@@ -4,7 +4,7 @@ applications:
    project: default
    source:
      repoURL: https://github.com/kevogabaa/terraform.git
-     targetRevision: HEAD
+     targetRevision: main
      path: manifests/Ingress
    destination:
      server: https://kubernetes.default.svc
@@ -20,7 +20,7 @@ applications:
    project: default
    source:
      repoURL: https://github.com/kevogabaa/terraform.git
-     targetRevision: HEAD
+     targetRevision: main
      path: manifests/deployment
    destination:
      server: https://kubernetes.default.svc
