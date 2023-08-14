@@ -1,0 +1,43 @@
+# server:
+  # ingress:
+  #   enabled: true
+  #   annotations:
+  #     cert-manager.io/cluster-issuer: letsencrypt-prod
+  #     kubernetes.io/tls-acme: "true"
+  #     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  #     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  #   ingressClassName: "nginx"
+  #   hosts:
+  #     - host: argo.ogaba.io
+  #       paths:
+  #         - path: /
+  #           pathType: Prefix
+  #           backend:
+  #             service:
+  #               name: argocd-server
+  #               port:
+  #                 name: https
+  #   tls:
+  #     - hosts:
+  #       - argo.ogaba.io
+  #       secretName: argocd-secret
+
+applications:
+ - name: argocd-ingress
+   namespace: argocd
+   project: default
+   source:
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: terraform-two/manifests/argo
+   destination:
+     server: https://kubernetes.default.svc
+   syncPolicy:
+     automated:
+       prune: true
+       selfHeal: true
+     syncOptions:
+      - CreateNamespace=true
+
+
+
