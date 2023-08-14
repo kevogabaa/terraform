@@ -29,7 +29,7 @@ applications:
    source:
      repoURL: https://github.com/kevogabaa/terraform.git
      targetRevision: main
-     path: terraform-two/manifests/argo
+     path: terraform-two/manifests
    destination:
      server: https://kubernetes.default.svc
    syncPolicy:
