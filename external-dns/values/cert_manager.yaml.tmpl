@@ -1,0 +1,6 @@
+podLabels:
+  azure.workload.identity/use: "${podlabel_identity_use}"
+serviceAccount:
+  labels:
+    azure.workload.identity/use: "${service_account_identity_use}"
+installCRDs: true

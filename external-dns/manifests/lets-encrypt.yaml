@@ -1,0 +1,21 @@
+# clusterissuer-lets-encrypt-production.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: kevogaba@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-production
+    solvers:
+    - dns01:
+        azureDNS:
+          resourceGroupName: test-resource-group
+          subscriptionID: 82702432-2525-4259-bd45-ea9bda10908a
+          hostedZoneName: app01.ogaba.io
+          environment: AzurePublicCloud
+          managedIdentity:
+            clientID: 0abbf17c-7485-42c4-b779-345f2ad9f9cf

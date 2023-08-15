@@ -4,6 +4,7 @@ resource "azurerm_resource_group" "aks_rg" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
+    depends_on = [ azurerm_resource_group.aks_rg ]
   name                = var.cluster_name
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
@@ -55,58 +56,108 @@ resource "azurerm_monitor_diagnostic_setting" "aks_logs" {
     }
   }
 
-  # Add more log categories as needed
-
   log_analytics_workspace_id = azurerm_log_analytics_workspace.aks_logs_workspace.id
 }
 
 resource "helm_release" "argo" {
+  depends_on = [ azurerm_kubernetes_cluster.aks_cluster, azurerm_public_ip.static_ip ]
   name       = "argo"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   version    = "3.35.4"
   namespace  = "argocd"
   create_namespace = true
+#   values = [file("${path.module}/values/argo.yaml")]
+
+  timeout = 1200
+  set {
+    name = "server.service.loadBalancerIP"
+    value = azurerm_public_ip.static_ip.ip_address
+  }
+  set {
+    name = "server.service.type"
+    value = "LoadBalancer"
+  }
+  
+#   set {
+#     name  = "server.ingress.enabled"
+#     value = "true"
+#   }
+
+#   set {
+#     name  = "server.ingress.annotations.cert-manager.io/cluster-issuer"
+#     value = "letsencrypt-prod"
+#   }
+
+#   set {
+#     name  = "server.ingress.annotations.kubernetes.io/tls-acme"
+#     value = "true"
+#   }
+
+#   set {
+#     name  = "server.ingress.annotations.nginx.ingress.kubernetes.io/ssl-passthrough"
+#     value = "true"
+#   }
+
+#   set {
+#     name  = "server.ingress.annotations.nginx.ingress.kubernetes.io/backend-protocol"
+#     value = "HTTPS"
+#   }
+
+#   set {
+#     name  = "server.ingress.annotations.nginx.ingress.kubernetes.io/rewrite-target"
+#     value = "/"
+#   }
+
+#   set {
+#     name  = "server.ingress.ingressClassName"
+#     value = "nginx"
+#   }
+
+#   set {
+#     name  = "server.ingress.rules[0].host"
+#     value = "argo.ogaba.io"
+#   }
+
+#   set {
+#     name  = "server.ingress.rules[0].http.paths[0].path"
+#     value = "/"
+#   }
+
+#   set {
+#     name  = "server.ingress.rules[0].http.paths[0].pathType"
+#     value = "Prefix"
+#   }
+
+#   set {
+#     name  = "server.ingress.rules[0].http.paths[0].backend.service.name"
+#     value = "argocd-server"
+#   }
+
+#   set {
+#     name  = "server.ingress.rules[0].http.paths[0].backend.service.port.name"
+#     value = "https"
+#   }
+
+#   set {
+#     name  = "server.ingress.tls[0].hosts[0]"
+#     value = "argo.ogaba.io"
+#   }
+#    set {
+#     name  = "server.ingress.tls[0].secretName"
+#     value = "argocd-secret"
+#   }
 }
 
 
 resource "helm_release" "argocd-apps" {
-  depends_on = [helm_release.argo, azurerm_kubernetes_cluster.aks_cluster]
+  depends_on = [helm_release.argo]
   chart      = "argocd-apps"
   name       = "argocd-apps"
   namespace  = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   values = [file("${path.module}/values/argo.yaml")]
 }
-
-resource "kubernetes_service" "argocd_server" {
-  metadata {
-    name      = "argocd-server"
-    namespace = "argocd"
-  }
-
-  spec {
-    selector = {
-      "app.kubernetes.io/name" = "argocd-server"
-    }
-
-    port {
-      port        = 443
-      target_port = "https"
-    }
-
-    type = "LoadBalancer"
-    load_balancer_ip = azurerm_public_ip.static_ip.ip_address
-  }
-}
-
-data "kubernetes_service" "argocd_server" {
-  metadata {
-    name      = "argocd-server"
-    namespace = "argocd"
-  }
-}
-
 
 resource "azurerm_public_ip" "static_ip" {
   name                = var.static_ip_name
@@ -186,6 +237,3 @@ resource "azurerm_network_security_rule" "argocd_nsg_rule" {
   resource_group_name         = azurerm_kubernetes_cluster.aks_cluster.node_resource_group
   network_security_group_name = azurerm_network_security_group.argocd_nsg.name
 }
-
-
-

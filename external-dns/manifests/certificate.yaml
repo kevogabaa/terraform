@@ -1,0 +1,21 @@
+# certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: www
+  namespace: cert-manager
+spec:
+  secretName: www-tls
+  privateKey:
+    rotationPolicy: Always
+  commonName: www.app01.ogaba.io
+  dnsNames:
+    - www.app01.ogaba.io
+    - app01.ogaba.io
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer

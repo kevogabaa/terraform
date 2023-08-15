@@ -1,0 +1,16 @@
+applications:
+ - name: argocd-ingress
+   namespace: argocd
+   project: default
+   source:
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: external-dns/manifests
+   destination:
+     server: https://kubernetes.default.svc
+   syncPolicy:
+     automated:
+       prune: true
+       selfHeal: true
+     syncOptions:
+      - CreateNamespace=true
