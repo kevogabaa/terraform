@@ -14,3 +14,18 @@ applications:
        selfHeal: true
      syncOptions:
       - CreateNamespace=true
+ - name: heml-values
+   namespace: argocd
+   project: default
+   source:
+     repoURL: https://github.com/kevogabaa/terraform.git
+     targetRevision: main
+     path: external-dns/values
+   destination:
+     server: https://kubernetes.default.svc
+   syncPolicy:
+     automated:
+       prune: true
+       selfHeal: true
+     syncOptions:
+      - CreateNamespace=true
